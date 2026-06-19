@@ -12,7 +12,6 @@
 class CAccManagerApp : public CWinApp
 {
 public:
-	CAccManagerApp();
 	virtual BOOL InitInstance();
 	DECLARE_MESSAGE_MAP()
 };

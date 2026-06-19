@@ -1,24 +1,14 @@
-﻿
+﻿// Copyright(c) 2026 Yuhano.All rights reserved.
 // AccManager.cpp: 定义应用程序的类行为。
-//
 
 #include "pch.h"
 #include "framework.h"
 #include "AccManager.h"
 #include "AccManagerDlg.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
 BEGIN_MESSAGE_MAP(CAccManagerApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
-
-CAccManagerApp::CAccManagerApp()
-{
-	
-}
 
 CAccManagerApp theApp;
 BOOL CAccManagerApp::InitInstance()

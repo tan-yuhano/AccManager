@@ -20,7 +20,10 @@ void CAccManagerDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAccManagerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CAccManagerDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_Enable, &CAccManagerDlg::OnBnClickedEnable)
+	ON_BN_CLICKED(IDC_Disable, &CAccManagerDlg::OnBnClickedDisable)
+	ON_BN_CLICKED(IDC_Delete, &CAccManagerDlg::OnBnClickedDelete)
+	ON_BN_CLICKED(IDC_Cmd, &CAccManagerDlg::OnBnClickedCmd)
 END_MESSAGE_MAP()
 
 BOOL CAccManagerDlg::OnInitDialog()
@@ -58,7 +61,20 @@ HCURSOR CAccManagerDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-void CAccManagerDlg::OnBnClickedButton1()
+void CAccManagerDlg::OnBnClickedEnable()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	std::system("net user administrator /active:yes");
+}
+void CAccManagerDlg::OnBnClickedDisable()
+{
+	std::system("net user administrator /active:no");
+}
+void CAccManagerDlg::OnBnClickedDelete()
+{
+	std::system("net user administrator """);
+}
+
+void CAccManagerDlg::OnBnClickedCmd()
+{
+	std::system("cmd.exe");
 }
