@@ -5,9 +5,6 @@
 #include "AccManager.h"
 #include "AccManagerDlg.h"
 #include "afxdialogex.h"
-#include <windows.h>
-#include <lm.h>
-#pragma comment(lib, "netapi32.lib")
 
 CAccManagerDlg::CAccManagerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ACCMANAGER_DIALOG, pParent)
@@ -30,9 +27,33 @@ BEGIN_MESSAGE_MAP(CAccManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_Restart, &CAccManagerDlg::OnBnClickedRestart)
 END_MESSAGE_MAP()
 
+BOOL CAccManagerDlg::IsAdministratorEnabled()
+{
+	USER_INFO_2* pUserInfo = NULL;
+	BOOL bEnabled = FALSE;
+	DWORD dwResult = NetUserGetInfo(NULL,
+		L"Administrator",
+		2,
+		(LPBYTE*)&pUserInfo);
+
+	if (dwResult == NERR_Success && pUserInfo != NULL)
+	{
+		if ((pUserInfo->usri2_flags & UF_ACCOUNTDISABLE) == 0)
+		{
+			bEnabled = TRUE;
+		}
+		NetApiBufferFree(pUserInfo);
+	}
+	return bEnabled;
+}
+
 BOOL CAccManagerDlg::OnInitDialog()
 {
 	SetWindowText(_T("Yuhano Account Manager"));
+	CString strStatus;
+	strStatus.Format(_T("Administrator账户状态: %s"),
+		IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
+	SetDlgItemText(IDC_Info, strStatus);
 	CDialogEx::OnInitDialog();
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
@@ -110,10 +131,18 @@ HCURSOR CAccManagerDlg::OnQueryDragIcon()
 void CAccManagerDlg::OnBnClickedEnable()
 {
 	EnableAdministrator(TRUE);
+	CString strStatus;
+	strStatus.Format(_T("Administrator账户状态: %s"),
+		IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
+	SetDlgItemText(IDC_Info, strStatus);
 }
 void CAccManagerDlg::OnBnClickedDisable()
 {
 	EnableAdministrator(FALSE);
+	CString strStatus;
+	strStatus.Format(_T("Administrator账户状态: %s"),
+		IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
+	SetDlgItemText(IDC_Info, strStatus);
 }
 void CAccManagerDlg::OnBnClickedDelete()
 {
@@ -122,6 +151,10 @@ void CAccManagerDlg::OnBnClickedDelete()
 void CAccManagerDlg::OnBnClickedCmd()
 {
 	std::system("cmd.exe");
+	CString strStatus;
+	strStatus.Format(_T("Administrator账户状态: %s"),
+		IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
+	SetDlgItemText(IDC_Info, strStatus);
 }
 void CAccManagerDlg::OnBnClickedRestart()
 {

@@ -30,4 +30,5 @@ public:
 	afx_msg void OnBnClickedRestart();
 	BOOL EnableAdministrator(BOOL bEnable);
 	BOOL SetAdministratorPassword(LPCWSTR lpszNewPassword);
+	BOOL IsAdministratorEnabled();
 };

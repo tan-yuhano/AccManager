@@ -2,4 +2,6 @@
 #pragma once
 #include "framework.h"
 #include "targetver.h"
+#include <lm.h>
 #include <cstdlib>
+#pragma comment(lib, "netapi32.lib")
