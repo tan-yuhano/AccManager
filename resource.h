@@ -7,8 +7,9 @@
 #define IDC_Enable                      1001
 #define IDC_Disable                     1002
 #define IDC_Delete                      1003
-#define IDC_Delete2                     1004
 #define IDC_Cmd                         1004
+#define IDC_Cmd2                        1005
+#define IDC_Restart                     1005
 
 // Next default values for new objects
 // 

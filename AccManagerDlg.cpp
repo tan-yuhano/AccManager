@@ -5,6 +5,9 @@
 #include "AccManager.h"
 #include "AccManagerDlg.h"
 #include "afxdialogex.h"
+#include <windows.h>
+#include <lm.h>
+#pragma comment(lib, "netapi32.lib")
 
 CAccManagerDlg::CAccManagerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ACCMANAGER_DIALOG, pParent)
@@ -24,10 +27,12 @@ BEGIN_MESSAGE_MAP(CAccManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_Disable, &CAccManagerDlg::OnBnClickedDisable)
 	ON_BN_CLICKED(IDC_Delete, &CAccManagerDlg::OnBnClickedDelete)
 	ON_BN_CLICKED(IDC_Cmd, &CAccManagerDlg::OnBnClickedCmd)
+	ON_BN_CLICKED(IDC_Restart, &CAccManagerDlg::OnBnClickedRestart)
 END_MESSAGE_MAP()
 
 BOOL CAccManagerDlg::OnInitDialog()
 {
+	SetWindowText(_T("Yuhano Account Manager"));
 	CDialogEx::OnInitDialog();
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
@@ -57,24 +62,80 @@ void CAccManagerDlg::OnPaint()
 	}
 }
 
+BOOL CAccManagerDlg::EnableAdministrator(BOOL bEnable)
+{
+	USER_INFO_1008 userInfo;
+	userInfo.usri1008_flags = bEnable ? 0 : UF_ACCOUNTDISABLE;
+	NET_API_STATUS nStatus = NetUserSetInfo(NULL,
+		L"Administrator",
+		1008,
+		(LPBYTE)&userInfo,
+		NULL);
+
+	if (nStatus == NERR_Success)
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
+BOOL CAccManagerDlg::SetAdministratorPassword(LPCWSTR lpszNewPassword)
+{
+	USER_INFO_1003 userInfo;
+	userInfo.usri1003_password = (LPWSTR)lpszNewPassword;
+	NET_API_STATUS nStatus = NetUserSetInfo(NULL,
+		L"Administrator",
+		1003,
+		(LPBYTE)&userInfo,
+		NULL);
+
+	if (nStatus == NERR_Success)
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
 HCURSOR CAccManagerDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
+
 void CAccManagerDlg::OnBnClickedEnable()
 {
-	std::system("net user administrator /active:yes");
+	EnableAdministrator(TRUE);
 }
 void CAccManagerDlg::OnBnClickedDisable()
 {
-	std::system("net user administrator /active:no");
+	EnableAdministrator(FALSE);
 }
 void CAccManagerDlg::OnBnClickedDelete()
 {
-	std::system("net user administrator """);
+	SetAdministratorPassword(L"");
 }
-
 void CAccManagerDlg::OnBnClickedCmd()
 {
 	std::system("cmd.exe");
+}
+void CAccManagerDlg::OnBnClickedRestart()
+{
+	HANDLE hToken;
+	TOKEN_PRIVILEGES tkp;
+	if (!OpenProcessToken(GetCurrentProcess(),
+		TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+		return;
+	LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &tkp.Privileges[0].Luid);
+	tkp.PrivilegeCount = 1;
+	tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+	AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
+	if (!ExitWindowsEx(EWX_REBOOT, 0))
+	{
+		AfxMessageBox(_T("重启失败"));
+	}
 }
