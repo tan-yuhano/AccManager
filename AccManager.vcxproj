@@ -183,8 +183,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableUAC>false</EnableUAC>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
       <UACUIAccess>true</UACUIAccess>
+      <AllowIsolation>true</AllowIsolation>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

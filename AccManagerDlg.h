@@ -28,6 +28,7 @@ public:
 	afx_msg void OnBnClickedDelete();
 	afx_msg void OnBnClickedCmd();
 	afx_msg void OnBnClickedRestart();
+	afx_msg void Refresh();
 	BOOL EnableAdministrator(BOOL bEnable);
 	BOOL SetAdministratorPassword(LPCWSTR lpszNewPassword);
 	BOOL IsAdministratorEnabled();

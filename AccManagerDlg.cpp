@@ -25,6 +25,7 @@ BEGIN_MESSAGE_MAP(CAccManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_Delete, &CAccManagerDlg::OnBnClickedDelete)
 	ON_BN_CLICKED(IDC_Cmd, &CAccManagerDlg::OnBnClickedCmd)
 	ON_BN_CLICKED(IDC_Restart, &CAccManagerDlg::OnBnClickedRestart)
+	ON_BN_CLICKED(IDC_Refresh, &CAccManagerDlg::Refresh)
 END_MESSAGE_MAP()
 
 BOOL CAccManagerDlg::IsAdministratorEnabled()
@@ -50,10 +51,7 @@ BOOL CAccManagerDlg::IsAdministratorEnabled()
 BOOL CAccManagerDlg::OnInitDialog()
 {
 	SetWindowText(_T("Yuhano Account Manager"));
-	CString strStatus;
-	strStatus.Format(_T("Administrator账户状态: %s"),
-		IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
-	SetDlgItemText(IDC_Info, strStatus);
+	Refresh();
 	CDialogEx::OnInitDialog();
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
@@ -131,18 +129,12 @@ HCURSOR CAccManagerDlg::OnQueryDragIcon()
 void CAccManagerDlg::OnBnClickedEnable()
 {
 	EnableAdministrator(TRUE);
-	CString strStatus;
-	strStatus.Format(_T("Administrator账户状态: %s"),
-		IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
-	SetDlgItemText(IDC_Info, strStatus);
+	Refresh();
 }
 void CAccManagerDlg::OnBnClickedDisable()
 {
 	EnableAdministrator(FALSE);
-	CString strStatus;
-	strStatus.Format(_T("Administrator账户状态: %s"),
-		IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
-	SetDlgItemText(IDC_Info, strStatus);
+	Refresh();
 }
 void CAccManagerDlg::OnBnClickedDelete()
 {
@@ -151,10 +143,7 @@ void CAccManagerDlg::OnBnClickedDelete()
 void CAccManagerDlg::OnBnClickedCmd()
 {
 	std::system("cmd.exe");
-	CString strStatus;
-	strStatus.Format(_T("Administrator账户状态: %s"),
-		IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
-	SetDlgItemText(IDC_Info, strStatus);
+	Refresh();
 }
 void CAccManagerDlg::OnBnClickedRestart()
 {
@@ -171,4 +160,13 @@ void CAccManagerDlg::OnBnClickedRestart()
 	{
 		AfxMessageBox(_T("重启失败"));
 	}
+}
+void CAccManagerDlg::Refresh()
+{
+	CString strStatus;
+	strStatus.Format(_T("Administrator账户状态: %s"),
+	IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
+	SetDlgItemText(IDC_Info, strStatus);
+	GetDlgItem(IDC_Enable)->EnableWindow(!IsAdministratorEnabled());
+	GetDlgItem(IDC_Disable)->EnableWindow(IsAdministratorEnabled());
 }
