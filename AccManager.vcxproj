@@ -224,6 +224,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AccManager.ico" />
+    <Image Include="res\ico269.ico" />
+    <Image Include="res\icon2.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

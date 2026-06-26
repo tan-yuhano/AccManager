@@ -5,6 +5,7 @@
 #include "AccManager.h"
 #include "AccManagerDlg.h"
 #include "afxdialogex.h"
+#include <thread>
 
 CAccManagerDlg::CAccManagerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ACCMANAGER_DIALOG, pParent)
@@ -50,11 +51,31 @@ BOOL CAccManagerDlg::IsAdministratorEnabled()
 
 BOOL CAccManagerDlg::OnInitDialog()
 {
-	SetWindowText(_T("Yuhano Account Manager"));
-	Refresh();
 	CDialogEx::OnInitDialog();
+
+	SetWindowText(_T("Yuhano Account Manager"));
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
+
+	CStatic* pPicture = (CStatic*)GetDlgItem(IDC_USER);
+	if (pPicture != NULL)
+	{
+		HICON hIcon = (HICON)LoadImage(
+			AfxGetResourceHandle(),
+			MAKEINTRESOURCE(IDI_USER),
+			IMAGE_ICON,
+			128,128,
+			LR_DEFAULTCOLOR
+		);
+
+		if (hIcon != NULL)
+		{
+			pPicture->ModifyStyle(0xF, SS_ICON | SS_CENTERIMAGE);
+			pPicture->SetIcon(hIcon);
+		}
+	}
+
+	Refresh();
 	return TRUE;
 }
 
@@ -142,7 +163,7 @@ void CAccManagerDlg::OnBnClickedDelete()
 }
 void CAccManagerDlg::OnBnClickedCmd()
 {
-	std::system("cmd.exe");
+	std::thread([](){std::system("cmd.exe");}).detach();
 	Refresh();
 }
 void CAccManagerDlg::OnBnClickedRestart()
@@ -163,10 +184,33 @@ void CAccManagerDlg::OnBnClickedRestart()
 }
 void CAccManagerDlg::Refresh()
 {
+
 	CString strStatus;
-	strStatus.Format(_T("Administrator账户状态: %s"),
-	IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
+	strStatus.Format(_T("账户状态: %s"),
+		IsAdministratorEnabled() ? _T("Enable") : _T("Disable"));
 	SetDlgItemText(IDC_Info, strStatus);
 	GetDlgItem(IDC_Enable)->EnableWindow(!IsAdministratorEnabled());
 	GetDlgItem(IDC_Disable)->EnableWindow(IsAdministratorEnabled());
+
+	BOOL bElevated = FALSE;
+	HANDLE hToken = NULL;
+	if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
+	{
+		TOKEN_ELEVATION te;
+		DWORD dwSize = 0;
+		if (GetTokenInformation(hToken, TokenElevation, &te, sizeof(te), &dwSize))
+		{
+			bElevated = te.TokenIsElevated != 0;
+		}
+		CloseHandle(hToken);
+	}
+
+	if (bElevated)
+	{
+		SetDlgItemText(IDC_Info2, _T("准备就绪"));
+	}
+	else
+	{
+		SetDlgItemText(IDC_Info2, _T("权限不足"));
+	}
 }
